@@ -16,7 +16,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { motion } from 'framer-motion';
 
-function SortableSection({ id, type }: { id: string; type: string }) {
+function SortableSection({ id, type, props }: { id: string; type: string; props: any }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
   const select = useBuilderStore((s) => s.select);
   const selectedId = useBuilderStore((s) => s.selectedId);
@@ -35,13 +35,44 @@ function SortableSection({ id, type }: { id: string; type: string }) {
       {...listeners}
       style={style}
       layout
-      onClick={() => select(id)}
+      onClick={(e) => {
+        e.stopPropagation();
+        select(id);
+      }}
       className={`m-3 p-4 rounded border cursor-pointer ${
         isSelected ? 'border-emerald-500 bg-slate-800' : 'border-slate-700 bg-slate-850'
       }`}
     >
-      <h3 className="capitalize font-medium">{type}</h3>
-      <p className="text-sm text-slate-400">[Section preview placeholder]</p>
+      {/* 🧩 Dynamic section preview */}
+      {type === 'hero' && (
+        <div>
+          <h3 className="text-xl font-semibold">{props.title || 'Hero Title'}</h3>
+          <p className="text-slate-400">{props.subtitle || 'Subtitle goes here'}</p>
+          {props.imageUrl && (
+            <img
+              src={props.imageUrl}
+              alt="Hero"
+              className="w-full h-32 object-cover rounded mt-2"
+            />
+          )}
+          {props.ctaText && (
+            <button className="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded">
+              {props.ctaText}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* generic fallback */}
+      {type !== 'hero' && (
+        <>
+          <h3 className="capitalize font-medium">{type}</h3>
+          {props.title && <p className="text-white">{props.title}</p>}
+          <p className="text-sm text-slate-400">
+            {props.description || '[Section preview placeholder]'}
+          </p>
+        </>
+      )}
     </motion.div>
   );
 }
@@ -50,7 +81,9 @@ export default function Canvas() {
   const sections = useBuilderStore((s) => s.layout.sections);
   const reorder = useBuilderStore((s) => s.reorder);
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
 
   function handleDragEnd(event: any) {
     const { active, over } = event;
@@ -70,7 +103,7 @@ export default function Canvas() {
           )}
 
           {sections.map((s) => (
-            <SortableSection key={s.id} id={s.id} type={s.type} />
+            <SortableSection key={s.id} id={s.id} type={s.type} props={s.props} />
           ))}
         </div>
       </SortableContext>
