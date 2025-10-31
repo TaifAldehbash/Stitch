@@ -71,34 +71,200 @@ function HeroEditor({ section }: { section: Section }) {
   );
 }
 
-// Fallback generic editor
-function GenericEditor({ section }: { section: Section }) {
+function FeaturesEditor({ section }: { section: Section }) {
   const updateProps = useBuilderStore((s) => s.updateProps);
+  if (section.type !== 'features') return null;
 
-  const hasTitle = 'title' in section.props;
-  const hasDescription = 'description' in section.props;
+  const items = section.props.items ?? [];
+
+  const handleItemChange = (index: number, key: 'title' | 'description', value: string) => {
+    const newItems = [...items];
+    newItems[index] = { ...newItems[index], [key]: value };
+    updateProps(section.id, { items: newItems });
+  };
+
+  const handleAddItem = () => {
+    const newItems = [...items, { title: '', description: '' }];
+    updateProps(section.id, { items: newItems });
+  };
+
+  const handleRemoveItem = (index: number) => {
+    const newItems = items.filter((_, i) => i !== index);
+    updateProps(section.id, { items: newItems });
+  };
 
   return (
     <div className="space-y-3">
-      {hasTitle && (
-        <Field
-          label="Title"
-          value={(section.props as any).title ?? ''}
-          onChange={(v) => updateProps(section.id, { title: v })}
-        />
-      )}
-
-      {hasDescription && (
-        <Field
-          label="Description"
-          textarea
-          value={(section.props as any).description ?? ''}
-          onChange={(v) => updateProps(section.id, { description: v })}
-        />
-      )}
+      <Field
+        label="Title"
+        value={section.props.title ?? ''}
+        onChange={(v) => updateProps(section.id, { title: v })}
+      />
+      <div>
+        <label className="block text-sm text-slate-400 mb-1">Features</label>
+        {items.map((item, index) => (
+          <div key={index} className="mb-4 border border-slate-700 rounded p-2 space-y-2 bg-slate-900">
+            <Field
+              label="Feature Title"
+              value={item.title}
+              onChange={(v) => handleItemChange(index, 'title', v)}
+            />
+            <Field
+              label="Feature Description"
+              value={item.description}
+              textarea
+              onChange={(v) => handleItemChange(index, 'description', v)}
+            />
+            <button
+              type="button"
+              onClick={() => handleRemoveItem(index)}
+              className="text-red-500 text-sm underline"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={handleAddItem}
+          className="mt-2 px-3 py-1 bg-slate-700 rounded text-white text-sm"
+        >
+          Add Feature
+        </button>
+      </div>
     </div>
   );
 }
+
+function FaqEditor({ section }: { section: Section }) {
+  const updateProps = useBuilderStore((s) => s.updateProps);
+  if (section.type !== 'faq') return null;
+
+  const items = section.props.items ?? [];
+
+  const handleItemChange = (index: number, key: 'q' | 'a', value: string) => {
+    const newItems = [...items];
+    newItems[index] = { ...newItems[index], [key]: value };
+    updateProps(section.id, { items: newItems });
+  };
+
+  const handleAddItem = () => {
+    const newItems = [...items, { question: '', answer: '' }];
+    updateProps(section.id, { items: newItems });
+  };
+
+  const handleRemoveItem = (index: number) => {
+    const newItems = items.filter((_, i) => i !== index);
+    updateProps(section.id, { items: newItems });
+  };
+
+  return (
+    <div className="space-y-3">
+      <Field
+        label="Title"
+        value={section.props.title ?? ''}
+        onChange={(v) => updateProps(section.id, { title: v })}
+      />
+      <div>
+        <label className="block text-sm text-slate-400 mb-1">FAQ Items</label>
+        {items.map((item, index) => (
+          <div key={index} className="mb-4 border border-slate-700 rounded p-2 space-y-2 bg-slate-900">
+            <Field
+              label="Question"
+              value={item.q}
+              onChange={(v) => handleItemChange(index, 'q', v)}
+            />
+            <Field
+              label="Answer"
+              value={item.a}
+              textarea
+              onChange={(v) => handleItemChange(index, 'a', v)}
+            />
+            <button
+              type="button"
+              onClick={() => handleRemoveItem(index)}
+              className="text-red-500 text-sm underline"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={handleAddItem}
+          className="mt-2 px-3 py-1 bg-slate-700 rounded text-white text-sm"
+        >
+          Add FAQ Item
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FooterEditor({ section }: { section: Section }) {
+  const updateProps = useBuilderStore((s) => s.updateProps);
+  if (section.type !== 'footer') return null;
+
+  const links = section.props.links ?? [];
+
+  const handleLinkChange = (index: number, key: 'label' | 'href', value: string) => {
+    const newLinks = [...links];
+    newLinks[index] = { ...newLinks[index], [key]: value };
+    updateProps(section.id, { links: newLinks });
+  };
+
+  const handleAddLink = () => {
+    const newLinks = [...links, { label: '', href: '' }];
+    updateProps(section.id, { links: newLinks });
+  };
+
+  const handleRemoveLink = (index: number) => {
+    const newLinks = links.filter((_, i) => i !== index);
+    updateProps(section.id, { links: newLinks });
+  };
+
+  return (
+    <div className="space-y-3">
+      <Field
+        label="Copyright"
+        value={section.props.copyright ?? ''}
+        onChange={(v) => updateProps(section.id, { copyright: v })}
+      />
+      <div>
+        <label className="block text-sm text-slate-400 mb-1">Links</label>
+        {links.map((link, index) => (
+          <div key={index} className="mb-4 border border-slate-700 rounded p-2 space-y-2 bg-slate-900">
+            <Field
+              label="Label"
+              value={link.label}
+              onChange={(v) => handleLinkChange(index, 'label', v)}
+            />
+            <Field
+              label="Href"
+              value={link.href}
+              onChange={(v) => handleLinkChange(index, 'href', v)}
+            />
+            <button
+              type="button"
+              onClick={() => handleRemoveLink(index)}
+              className="text-red-500 text-sm underline"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={handleAddLink}
+          className="mt-2 px-3 py-1 bg-slate-700 rounded text-white text-sm"
+        >
+          Add Link
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Inspector() {
   const selectedId = useBuilderStore((s) => s.selectedId);
   const section = useBuilderStore(
@@ -114,11 +280,10 @@ export default function Inspector() {
     <div className="p-4 space-y-3">
       <h2 className="text-lg font-semibold mb-2 capitalize">{section.type}</h2>
 
-      {section.type === 'hero' ? (
-        <HeroEditor section={section} />
-      ) : (
-        <GenericEditor section={section} />
-      )}
+      {section.type === 'hero' && <HeroEditor section={section} />}
+{section.type === 'features' && <FeaturesEditor section={section} />}
+{section.type === 'faq' && <FaqEditor section={section} />}
+{section.type === 'footer' && <FooterEditor section={section} />}
 
     </div>
   );

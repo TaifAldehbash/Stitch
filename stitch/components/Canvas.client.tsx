@@ -63,16 +63,63 @@ function SortableSection({ id, type, props }: { id: string; type: string; props:
         </div>
       )}
 
-      {/* generic fallback */}
-      {type !== 'hero' && (
-        <>
-          <h3 className="capitalize font-medium">{type}</h3>
-          {props.title && <p className="text-white">{props.title}</p>}
-          <p className="text-sm text-slate-400">
-            {props.description || '[Section preview placeholder]'}
-          </p>
-        </>
-      )}
+{type === 'features' && (
+  <div>
+    <h3 className="text-xl font-semibold mb-2">{props.title || 'Features'}</h3>
+    <ul className="space-y-2">
+      {(props.items ?? []).map((item: any, i: number) => (
+        <li key={i} className="border border-slate-700 rounded p-2 bg-slate-900">
+          <p className="font-medium text-emerald-400">{item.title || `Feature ${i + 1}`}</p>
+          <p className="text-slate-400 text-sm">{item.description || ''}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
+{type === 'faq' && (
+  <div>
+    <h3 className="text-xl font-semibold mb-2">{props.title || 'FAQ'}</h3>
+    <div className="space-y-2">
+      {(props.items ?? []).map((item: any, i: number) => (
+        <div key={i} className="border border-slate-700 rounded p-2 bg-slate-900">
+          <p className="font-medium text-emerald-400">{item.question || `Question ${i + 1}`}</p>
+          <p className="text-slate-400 text-sm">{item.answer || ''}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+{type === 'footer' && (
+  <div>
+    <p className="text-slate-400 text-sm mb-2">
+      {props.copyright || '© 2025 Your Company'}
+    </p>
+    <div className="flex flex-wrap gap-3">
+      {(props.links ?? []).map((link: any, i: number) => (
+        <a
+          key={i}
+          href={link.href || '#'}
+          className="text-emerald-400 text-sm hover:underline"
+        >
+          {link.label || 'Link'}
+        </a>
+      ))}
+    </div>
+  </div>
+)}
+
+{/* Generic fallback for unknown types */}
+{!['hero', 'features', 'faq', 'footer'].includes(type) && (
+  <>
+    <h3 className="capitalize font-medium">{type}</h3>
+    {props.title && <p className="text-white">{props.title}</p>}
+    <p className="text-sm text-slate-400">
+      {props.description || '[Section preview placeholder]'}
+    </p>
+  </>
+)}
     </motion.div>
   );
 }
